@@ -63,7 +63,6 @@ define wireguard::interface (
     group     => 'root',
     show_diff => false,
     content   => template("${module_name}/interface.conf.erb"),
-    notify    => Service["wg-quick@${name}.service"],
   }
 
   if $manage_service {
@@ -81,6 +80,10 @@ define wireguard::interface (
       provider => 'systemd',
       enable   => $_service_enable,
       require  => File["${config_dir}/${name}.conf"],
+    }
+
+    File["${config_dir}/${name}.conf"] {
+      notify => Service["wg-quick@${name}.service"]
     }
   }
 }
