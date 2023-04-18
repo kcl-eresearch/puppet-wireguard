@@ -53,6 +53,7 @@ define wireguard::interface (
   Optional[Variant[Enum['auto', 'off'],Integer]]      $table          = undef,
   Boolean               $saveconfig   = true,
   Stdlib::Absolutepath  $config_dir   = '/etc/wireguard',
+  Boolean               $manage_service = true,
 ) {
 
   file {"${config_dir}/${name}.conf":
@@ -65,19 +66,21 @@ define wireguard::interface (
     notify    => Service["wg-quick@${name}.service"],
   }
 
-  $_service_ensure = $ensure ? {
-    'absent' => 'stopped',
-    default  => 'running',
-  }
-  $_service_enable = $ensure ? {
-    'absent' => false,
-    default  => true,
-  }
+  if $manage_service {
+    $_service_ensure = $ensure ? {
+      'absent' => 'stopped',
+      default  => 'running',
+    }
+    $_service_enable = $ensure ? {
+      'absent' => false,
+      default  => true,
+    }
 
-  service {"wg-quick@${name}.service":
-    ensure   => $_service_ensure,
-    provider => 'systemd',
-    enable   => $_service_enable,
-    require  => File["${config_dir}/${name}.conf"],
+    service {"wg-quick@${name}.service":
+      ensure   => $_service_ensure,
+      provider => 'systemd',
+      enable   => $_service_enable,
+      require  => File["${config_dir}/${name}.conf"],
+    }
   }
 }
