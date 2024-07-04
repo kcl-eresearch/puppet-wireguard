@@ -79,6 +79,7 @@ define wireguard::interface (
       ensure   => $_service_ensure,
       provider => 'systemd',
       enable   => $_service_enable,
+      restart  => "/bin/systemctl reload wg-quick@${name}.service",
       require  => File["${config_dir}/${name}.conf"],
     }
 
