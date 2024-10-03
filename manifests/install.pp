@@ -79,4 +79,13 @@ class wireguard::install (
       require => $_require,
     }
   }
+
+  file {
+    '/opt/puppetlabs/facter/facts.d/wireguard_interfaces.py':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0550',
+      content => file('wireguard/facts.d/wireguard_interfaces.py');
+  }
 }
