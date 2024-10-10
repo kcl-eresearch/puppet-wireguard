@@ -32,7 +32,7 @@ for line in output.stdout.splitlines():
             "peers": {}
         }
         interfaces[fields[0]] = interface
-    
+
     elif len(fields) == 9:
         peer = {
             "interface": fields[0],
@@ -40,7 +40,7 @@ for line in output.stdout.splitlines():
             "preshared_key": fields[2],
             "endpoint": fields[3],
             "allowed_ips": fields[4].split(","),
-            "latest_handshake": datetime.datetime.utcfromtimestamp(int(fields[5])).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "latest_handshake": datetime.datetime.fromtimestamp(int(fields[5]), datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "transfer_rx": int(fields[6]),
             "transfer_tx": int(fields[7]),
             "persistent_keepalive": int(fields[8]),
