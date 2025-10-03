@@ -13,19 +13,19 @@ class wireguard::params {
     }
     'Ubuntu': {
       $manage_repo    = false
-      $package_name   = ['wireguard']
+      $package_name   = ['wireguard-tools']
       $repo_url       = ''
     }
     'Debian': {
       case $facts['os']['release']['major'] {
         '11': {
           $manage_repo  = false
-          $package_name = ['wireguard']
+          $package_name = ['wireguard-tools']
           $repo_url     = ''
         }
         default: {
           $manage_repo    = true
-          $package_name   = ['wireguard', 'wireguard-dkms', 'wireguard-tools']
+          $package_name   = ['wireguard-tools']
           $repo_url       = 'http://deb.debian.org/debian/'
         }
       }
