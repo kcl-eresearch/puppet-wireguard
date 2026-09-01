@@ -12,71 +12,13 @@
 #   Set state of the package
 class wireguard::install (
   Variant[Array, String] $package_name,
-  String                 $repo_url,
-  Boolean                $manage_repo,
   Boolean                $manage_package,
   Variant[Boolean, Enum['installed','latest','present']] $package_ensure,
 ) {
 
-  if $manage_repo {
-    case $facts['os']['name'] {
-      'RedHat', 'CentOS': {
-        exec {'download_wireguard_repo':
-          command => "/usr/bin/curl -Lo /etc/yum.repos.d/wireguard.repo ${repo_url}",
-          creates => '/etc/yum.repos.d/wireguard.repo',
-        }
-      }
-      'Ubuntu': {
-        include apt
-        apt::ppa { $repo_url: }
-      }
-      'Debian': {
-        include apt
-        apt::pin { 'debian_unstable':
-          release  => 'unstable',
-          priority => 90,
-        }
-        apt::source { 'debian_unstable':
-          location => $repo_url,
-          release  => 'unstable',
-        }
-      }
-      default: {
-        warning("Unsupported OS family, couldn't configure package automatically")
-      }
-    }
-  }
-
-  case $facts['os']['name'] {
-    'RedHat', 'CentOS': {
-      $_require = $manage_repo ? {
-        true    => Exec['download_wireguard_repo'],
-        default => undef,
-      }
-    }
-    'Ubuntu': {
-      $_require = $manage_repo ? {
-        true    => Apt::Ppa[$repo_url],
-        default => undef,
-      }
-    }
-    'Debian': {
-      $_require = $manage_repo ? {
-        true    => Apt::Source['debian_unstable'],
-        default => undef,
-      }
-    }
-    default: {
-      if $manage_package {
-        warning("Unsupported OS family, couldn't configure package automatically")
-      }
-    }
-  }
-
   if $manage_package {
     package { $package_name:
-      ensure  => $package_ensure,
-      require => $_require,
+      ensure  => $package_ensure;
     }
   }
 
